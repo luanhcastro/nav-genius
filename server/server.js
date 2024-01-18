@@ -1,12 +1,12 @@
 import express from 'express';
-import pool from './db';
+import userController from './src/user-controller.js';
+import { createTableUsers } from './database/db-tables.js';
 const port = 3000;
+const app = express();
 
-const app = express()
+app.use(express.json());
+createTableUsers()
 
-app.get('/', (req, res) => {
-    res.sendStatus(200)
-})
+app.use('/users', userController);
 
-
-app.listen(port, () => console.log(`Server has started on port: ${port}`))
+app.listen(port, () => console.log(`Server has started on port: ${port}`));
