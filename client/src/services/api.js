@@ -3,7 +3,6 @@ import API_URL from './apiConfig';
 const getAllClients = async () => {
   const response = await fetch(`${API_URL}/users`);
   const data = await response.json();
-  console.log(123213, data);
   return data;
 };
 
@@ -17,20 +16,21 @@ const addClient = async (client) => {
   });
 };
 
-const updateClient = async (clientId, client) => {
-  await fetch(`${API_URL}/users/${clientId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(client),
-  });
-};
-
 const deleteClient = async (clientId) => {
   await fetch(`${API_URL}/users/${clientId}`, {
     method: 'DELETE',
   });
 };
 
-export { getAllClients, addClient, updateClient, deleteClient };
+const getShortestRoute = async () => {
+  try {
+    const response =  await fetch(`${API_URL}/users/shortest-route`);
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { getAllClients, addClient, deleteClient, getShortestRoute };

@@ -1,12 +1,24 @@
-import React from 'react';
-import ClientList from './components/ClientList';
+import React from "react";
+import ClientList from "./components/ClientList";
+import background from "./img/background.jpg";
 
-function App() {
+const App = () => {
+  const containerStyle = {
+    background: `url(${background}) no-repeat center center fixed`,
+    backgroundSize: "cover",
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#fff",
+  };
+
   return (
-    <div>
+    <div style={containerStyle}>
       <ClientList />
     </div>
   );
-}
+};
 
 export default App;
