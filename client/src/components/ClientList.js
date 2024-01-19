@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Card, Space, Popconfirm, message, Modal } from "antd";
+import { ArrowRightOutlined } from "@ant-design/icons";
 import ClientModal from "./ClientModal";
-import { getAllClients, deleteClient } from "../services/api";
+import { getAllClients, deleteClient, getShortestRoute } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 
 const ClientList = () => {
   const [clients, setClients] = useState([]);
-  const [visible, setVisible] = useState(false);
+  const [clientModalVisible, setClientModalVisible] = useState(false);
+  const [shortestRouteModalVisible, setShortestRouteModalVisible] =
+    useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [shortestRoute, setShortestRoute] = useState([]);
+
+  const handleVisitClients = async () => {
+    try {
+      const route = await getShortestRoute();
+      setShortestRoute(route);
+      setShortestRouteModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching shortest route:", error);
+      message.error("Erro ao buscar a rota mais curta.");
+    }
+  };
 
   const columns = [
     {
@@ -51,7 +66,7 @@ const ClientList = () => {
   ];
 
   const handleCreateOrUpdate = () => {
-    setVisible(false);
+    setClientModalVisible(false);
   };
 
   const fetchData = async () => {
@@ -67,9 +82,18 @@ const ClientList = () => {
     fetchData();
   }, []);
 
-  const showModal = () => {
-    setVisible(true);
+  const showClientModal = () => {
+    setClientModalVisible(true);
     setSelectedClient(null);
+  };
+
+  const handleCloseClientModal = () => {
+    setClientModalVisible(false);
+  };
+
+  const handleCloseShortestRouteModal = () => {
+    setShortestRouteModalVisible(false);
+    setShortestRoute([]);
   };
 
   const handleDelete = async (record) => {
@@ -93,23 +117,53 @@ const ClientList = () => {
       }}
     >
       <Card
-        title="Nav Genius"
+        title="Clientes"
         extra={
-          <Button type="primary" onClick={() => showModal()}>
-            Novo Cliente
-          </Button>
+          <>
+            <Button
+              type="primary"
+              onClick={showClientModal}
+              style={{ marginRight: 5 }}
+            >
+              Novo Cliente
+            </Button>
+            <Button type="primary" onClick={handleVisitClients}>
+              Visitar Clientes
+            </Button>
+          </>
         }
       >
         <Table dataSource={clients} columns={columns} />
       </Card>
 
       <ClientModal
-        visible={visible}
-        onCancel={() => setVisible(false)}
+        visible={clientModalVisible}
+        onCancel={handleCloseClientModal}
         fetchData={fetchData}
         selectedClient={selectedClient}
         onSave={handleCreateOrUpdate}
       />
+
+      <Modal
+        title="Rota Mais Curta para visitar seus clientes:"
+        open={shortestRouteModalVisible}
+        onCancel={handleCloseShortestRouteModal}
+        footer={null}
+      >
+        <div>
+          {shortestRoute.map((customer, index) => (
+            <span key={index}>
+              {index === shortestRoute.length - 1 ? (
+                customer
+              ) : (
+                <>
+                  {customer} <ArrowRightOutlined />{" "}
+                </>
+              )}
+            </span>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 };
