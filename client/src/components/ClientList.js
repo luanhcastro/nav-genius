@@ -9,7 +9,7 @@ import {
   Modal,
   Input,
 } from "antd";
-import { ArrowRightOutlined, SearchOutlined, CloseOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined, SearchOutlined } from "@ant-design/icons";
 import ClientModal from "./ClientModal";
 import { getAllClients, deleteClient, getShortestRoute } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
@@ -130,7 +130,7 @@ const ClientList = () => {
     },
   ];
 
-  const handleCreateOrUpdate = () => {
+  const handleCreate = () => {
     setClientModalVisible(false);
   };
 
@@ -209,7 +209,7 @@ const ClientList = () => {
         onCancel={handleCloseClientModal}
         fetchData={fetchData}
         selectedClient={selectedClient}
-        onSave={handleCreateOrUpdate}
+        onSave={handleCreate}
       />
 
       <Modal
