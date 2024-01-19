@@ -28,9 +28,10 @@ class UserService {
   }
 
   static async updateUser(id, name, email, phone, coordinates) {
+    const pointString = `(${coordinates.x},${coordinates.y})`;
     const result = await pool.query(
       'UPDATE users SET name = $1, email = $2, phone = $3, coordinates = $4 WHERE id = $5 RETURNING *',
-      [name, email, phone, coordinates, id]
+      [name, email, phone, pointString, id]
     );
     return result.rows[0];
   }
