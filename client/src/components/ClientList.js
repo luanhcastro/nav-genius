@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Card, Space, Popconfirm, message, Modal } from "antd";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import {
+  Table,
+  Button,
+  Card,
+  Space,
+  Popconfirm,
+  message,
+  Modal,
+  Input,
+} from "antd";
+import { ArrowRightOutlined, SearchOutlined, CloseOutlined } from "@ant-design/icons";
 import ClientModal from "./ClientModal";
 import { getAllClients, deleteClient, getShortestRoute } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
@@ -24,21 +33,77 @@ const ClientList = () => {
     }
   };
 
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder={`Buscar ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ width: 188, marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Buscar
+          </Button>
+          <Button
+            onClick={() => handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Limpar
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+  });
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+  };
+
   const columns = [
     {
       title: "Nome",
       dataIndex: "name",
       key: "name",
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      ...getColumnSearchProps("email"),
     },
     {
       title: "Telefone",
       dataIndex: "phone",
       key: "phone",
+      ...getColumnSearchProps("phone"),
     },
     {
       title: "Coordenadas",
@@ -133,9 +198,12 @@ const ClientList = () => {
           </>
         }
       >
-        <Table dataSource={clients} columns={columns} />
+        <Table
+          dataSource={clients}
+          columns={columns}
+          pagination={{ defaultPageSize: 5 }}
+        />
       </Card>
-
       <ClientModal
         visible={clientModalVisible}
         onCancel={handleCloseClientModal}
