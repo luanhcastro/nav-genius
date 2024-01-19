@@ -9,43 +9,42 @@ function calculateDistance(coordinates1, coordinates2) {
   return distance;
 }
 
-function calculateDistances(users) {
-  const distances = [];
+function findClosestUser(user, remainingUsers) {
+  let minDistance = Number.POSITIVE_INFINITY;
+  let closestUser = null;
 
-  for (let i = 0; i < users.length; i++) {
-    distances[i] = [];
-    for (let j = 0; j < users.length; j++) {
-      distances[i][j] =
-        i === j
-          ? 0
-          : calculateDistance(users[i].coordinates, users[j].coordinates);
+  for (const otherUser of remainingUsers) {
+    const distance = calculateDistance(user.coordinates, otherUser.coordinates);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestUser = otherUser;
     }
   }
 
-  return distances;
+  return closestUser;
 }
 
-function calculateRoute(distances) {
-  const n = distances.length;
-  const route = [0];
+function calculateRoute(users) {
+  const n = users.length;
+  const visited = Array(n).fill(false);
+  const route = [];
+  
+  // Encontra usuário mais próximo de (0,0)
+  let closestToOrigin = findClosestUser({ coordinates: { x: 0, y: 0 } }, users);
+  route.push(closestToOrigin);
+  visited[users.indexOf(closestToOrigin)] = true;
 
+  // Constrói rota
   while (route.length < n) {
-    let minDistance = Number.POSITIVE_INFINITY;
-    let nextIndex = -1;
+    const lastUser = route[route.length - 1];
+    const remainingUsers = users.filter((user, index) => !visited[index]);
 
-    for (let i = 0; i < n; i++) {
-      if (!route.includes(i)) {
-        if (distances[route[route.length - 1]][i] < minDistance) {
-          minDistance = distances[route[route.length - 1]][i];
-          nextIndex = i;
-        }
-      }
-    }
-
-    route.push(nextIndex);
+    const closestUser = findClosestUser(lastUser, remainingUsers);
+    route.push(closestUser);
+    visited[users.indexOf(closestUser)] = true;
   }
 
-  return route;
+  return route.map(user => user.name);
 }
 
 class UserService {
@@ -90,9 +89,8 @@ class UserService {
   }
 
   static async calculateShortestRoute(users) {
-    const distances = calculateDistances(users);
-    const shortestRoute = calculateRoute(distances);
-    return shortestRoute.map((index) => users[index].name);
+    const shortestRoute = calculateRoute(users);
+    return shortestRoute;
   }
 }
 
