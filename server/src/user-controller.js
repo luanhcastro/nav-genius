@@ -15,22 +15,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await UserService.getUserById(id);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.json(user);
-  } catch (error) {
-    console.error('Error getting user:', error);
-    res.status(500).send('Server Error');
-  }
-});
-
 router.post('/', async (req, res) => {
   try {
     // Validando os dados do usuário
@@ -72,6 +56,17 @@ router.patch('/:id', async (req, res) => {
     res.json(updatedUser);
   } catch (error) {
     console.error('Error updating user:', error);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.get('/shortest-route', async (req, res) => {
+  try {
+    const users = await UserService.getAllUsers();
+    const shortestRoute = await UserService.calculateShortestRoute(users);
+    res.json(shortestRoute);
+  } catch (error) {
+    console.error('Error calculating shortest route:', error);
     res.status(500).send('Server Error');
   }
 });
