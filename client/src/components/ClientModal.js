@@ -22,15 +22,22 @@ const ClientModal = ({ visible, onCancel, fetchData, onSave }) => {
     values.coordinates.y = parseFloat(values.coordinates.y);
 
     try {
-      await addClient(values);
-      message.success("Cliente criado com sucesso!");
+      const response = await addClient(values);
+
+      console.log(response);
 
       onCancel();
       onSave();
       fetchData();
+      message.success("Cliente criado com sucesso!");
     } catch (error) {
       console.error("Error:", error);
-      message.error("Erro ao realizar a operação.");
+
+      if (error.message === "Precondition Failed") {
+        message.error("Email já cadastrado!");
+      } else {
+        message.error("Erro ao realizar a operação.");
+      }
     }
   };
 
