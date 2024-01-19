@@ -17,16 +17,6 @@ const addClient = async (client) => {
   });
 };
 
-const updateClient = async (clientId, client) => {
-  await fetch(`${API_URL}/users/${clientId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(client),
-  });
-};
-
 const deleteClient = async (clientId) => {
   await fetch(`${API_URL}/users/${clientId}`, {
     method: 'DELETE',
