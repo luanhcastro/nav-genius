@@ -1,4 +1,4 @@
-import API_URL from './apiConfig';
+import API_URL from "./apiConfig";
 
 const getAllClients = async () => {
   const response = await fetch(`${API_URL}/users`);
@@ -7,27 +7,31 @@ const getAllClients = async () => {
 };
 
 const addClient = async (client) => {
-  await fetch(`${API_URL}/users`, {
-    method: 'POST',
+  const response = await fetch(`${API_URL}/users`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(client),
   });
-};
 
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return response.json();
+};
 const deleteClient = async (clientId) => {
   await fetch(`${API_URL}/users/${clientId}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 };
 
 const getShortestRoute = async () => {
   try {
-    const response =  await fetch(`${API_URL}/users/shortest-route`);
+    const response = await fetch(`${API_URL}/users/shortest-route`);
     const data = await response.json();
     return data;
-
   } catch (error) {
     throw error;
   }
